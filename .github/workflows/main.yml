@@ -1,11 +1,12 @@
 name: Build and Push Dagster Image to AWS ECR Using OIDC.
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Set the tag version'
-        required: true 
-        type: string
+  push:
+  # workflow_dispatch:
+  #   inputs:
+  #     version:
+  #       description: 'Set the tag version'
+  #       required: true 
+  #       type: string
 
 jobs:
   build-and-push:
@@ -14,7 +15,7 @@ jobs:
       ecr_repository: gha-getupside
     permissions:
       id-token: write   # This is required for requesting the JWT
-      contents: read    # This is required for actions/checkout
+      contents: write    # This is required for actions/checkout
 
     name: Build and Push to ECR.
     runs-on: ubuntu-latest

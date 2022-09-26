@@ -33,26 +33,41 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build, Tag, and Push the Image to Amazon ECR
-      uses: whoan/docker-build-with-cache-action@fix-yaml-parsing
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
       with:
-        username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        image_name: ${{ env.ecr_repository }}
-        image_tag: workflow_lab_repo_${{ inputs.version }}
-        push_git_tag: true
-        registry: ${{ steps.login-ecr.outputs.registry }}
-        dockerfile: wf_lab.Dockerfile
-
-    - name: Uploading the Artifact
-      uses: actions/upload-artifact@v3
+        driver: docker-container
+        driver-opts: |
+          image=moby/buildkit:master
+          network=host
+  
+    - name: Cache Docker layers
+      uses: actions/cache@v2
       with:
-        name: static-site
-        path: /home/runner/work/gha-frontend/gha-frontend
-        # path: $GITHUB_WORKSPACE
+        path: /tmp/.buildx-cache
+        key: buildx-${{ github.sha }}
+        restore-keys: buildx-
 
-    outputs:
-      tag-name: ${{ steps.increment-git-tag.outputs.git-tag }}
+    # - name: Build, Tag, and Push the Image to Amazon ECR
+    #   uses: whoan/docker-build-with-cache-action@fix-yaml-parsing
+    #   with:
+    #     username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     image_name: ${{ env.ecr_repository }}
+    #     image_tag: workflow_lab_repo_${{ inputs.version }}
+    #     push_git_tag: true
+    #     registry: ${{ steps.login-ecr.outputs.registry }}
+    #     dockerfile: wf_lab.Dockerfile
+
+    # - name: Uploading the Artifact
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: static-site
+    #     path: /home/runner/work/gha-frontend/gha-frontend
+    #     # path: $GITHUB_WORKSPACE
+
+    # outputs:
+    #   tag-name: ${{ steps.increment-git-tag.outputs.git-tag }}
         
 
   # publish:

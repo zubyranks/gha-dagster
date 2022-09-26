@@ -17,14 +17,12 @@ jobs:
       - run: |
           git fetch --unshallow --tags
 
-      # - name: 'Get Previous Tag'
-      #   id: previous-tag
-      #   run: |
-      #     ls -lr 
-      #     pwd
-      #     LATEST_TAG=$(git describe --abbrev=0 --tags)
-      #     echo $LATEST_TAG
-      #     sed -i 's/x.x.x/'$LATEST_TAG'/g' build/git_update.sh
+      - name: 'Get Previous Tag'
+        id: previous-tag
+        run: |
+          LATEST_TAG=$(git describe --abbrev=0 --tags)
+          echo $LATEST_TAG
+          sed -i 's/x.x.x/'$LATEST_TAG'/g' build/git_update.sh
           
       - name: Automating Tagging of Releases.
         id: increment-git-tag

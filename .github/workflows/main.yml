@@ -17,7 +17,7 @@ jobs:
       id-token: write   # This is required for requesting the JWT
       contents: write    # This is required for actions/checkout
 
-    name: Build and Push to ECR
+    name: Build and Push to ECR.
     runs-on: ubuntu-latest
     steps:
     - name: Checkout

@@ -1,21 +1,21 @@
-FROM golang:1.17-buster AS build
+# docker build -t <ecr_repo> -f upside.Dockerfile .
+# docker tag <ecr_repo_name>:latest <ecr_repo_url>/<ecr_repo>:<tag_name>
+# docker push <ecr_repo_url>/<ecr_repo>:<tag_name>
 
-WORKDIR /apps
+ARG BASE_IMAGE
+FROM "python:3.7.13-slim"
 
-COPY go.mod ./
-COPY go.sum ./
-RUN go mod download
+ARG DAGSTER_VERSION
 
-COPY *.go ./
+# All packages are hard-pinned to `dagster`, so setting the version on just `DAGSTER` will ensure
+# compatible versions.
+RUN pip install \
+    dagster==0.12.10 \
+    dagster-postgres==0.12.10 \
+    dagster-k8s==0.12.10 \
+    dagster-aws==0.12.10 \
+    dagster-graphql \
+    dagit==0.12.10
 
-RUN go build -o /gha-charles
-
-FROM gcr.io/distroless/base-debian10
-
-WORKDIR /
-
-COPY --from=build /gha-charles /gha-charles
-
-USER nonroot:nonroot
-
-ENTRYPOINT ["/gha-charles"]
+# Get example pipelines
+COPY build_cache/ /

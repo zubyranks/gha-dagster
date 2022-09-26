@@ -1,42 +1,44 @@
-name: Build and Push Golang Image to AWS ECR
+name: Build and Push Golang Image to AWS ECR.
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Set the tag version'
+        required: true 
+        type: string
 
 jobs:
   build-and-push:
     env:
-      aws-region: us-west-2
-      ecr-repository: gha-getupside
+      aws-region: us-east-1
+      ecr_repository: gha-getupside
+    permissions:
+      id-token: write   # This is required for requesting the JWT
+      contents: read    # This is required for actions/checkout
 
-    name: Build and Push to ECR
+    name: Build and Push to ECR.
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Configure AWS credentials
+    - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_NUMBER }}:role/gha-frontend-role-auth
         aws-region: ${{ env.aws-region }}
 
     - name: Login to Amazon ECR.
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Automatic Tagging of Releases.
-      id: increment-git-tag
-      run: |
-        bash ./build/git_update.sh -v patch
-
     - name: Build, Tag, and Push the Image to Amazon ECR
       uses: whoan/docker-build-with-cache-action@fix-yaml-parsing
       with:
         username: ${{ secrets.AWS_ACCESS_KEY_ID }}
         password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        image_name: dagster
-        image_tag: gha-getupside_${{ steps.increment-git-tag.outputs.git-tag }}
+        image_name: ${{ env.ecr_repository }}
+        image_tag: workflow_lab_repo_${{ inputs.version }}
         push_git_tag: true
         registry: ${{ steps.login-ecr.outputs.registry }}
         dockerfile: wf_lab.Dockerfile
@@ -52,60 +54,37 @@ jobs:
       tag-name: ${{ steps.increment-git-tag.outputs.git-tag }}
         
 
-  publish:
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    steps:
-    - name: Downloading the Artifact.
-      id: download
-      uses: actions/download-artifact@v3
-      with:
-        name: static-site
+  # publish:
+  #   runs-on: ubuntu-latest
+  #   needs: build-and-push
+  #   steps:
+  #   - name: Downloading the Artifact.
+  #     id: download
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: static-site
 
-    - name: Package Artifact
-      uses: thedoctor0/zip-release@main
-      with:
-        filename: site.zip
-
-    - name: Create Release
-      id: create-release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ needs.build-and-push.outputs.tag-name }}
-        release_name: Release ${{ github.ref }}
-        body: New release for ${{ github.sha }}
-        draft: false
-        prerelease: false
+  #   - name: Package Artifact
+  #     uses: thedoctor0/zip-release@main
+  #     with:
+  #       filename: site.zip
     
-    # - name: Creating a Release.
-    #   uses: release-drafter/release-drafter@v5
-    #   id: create-release
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     tag: "${{ needs.build-and-push.outputs.tag-name }}"
-    #     publish: true
-    #     prerelease: false
-    #     config-name: release.yml
+  #   - name: Create a release.
+  #     uses: release-drafter/release-drafter@master
+  #     id: auto-release-notes
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.WORKFLOW_ACCESS }}
+  #     with:
+  #       tag: "${{ inputs.version }}"
+  #       publish: true
+  #       prerelease: false
+  #       config-name: release.yml
 
-    - name: Upload Release Asset
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create-release.outputs.upload_url }}
-        asset_path: ./site.zip
-        asset_name: release-${{ needs.build-and-push.outputs.tag-name }}
-        asset_content_type: application/zip
-
-    - name: Dispatch Builds
-      uses: peter-evans/repository-dispatch@v2
-      with:
-        token: ${{ secrets.WORKFLOW_ACCESS }}
-        event-type: workflow_lab
-        repository: zubyranks/gha-backend
-        client-payload: '{"git-tag": "${{ needs.build-and-push.outputs.tag-name }}"}'
+  #   - name: Dispatch Builds
+  #     uses: peter-evans/repository-dispatch@v2
+  #     with:
+  #       token: ${{ secrets.WORKFLOW_ACCESS }}
+  #       event-type: workflow_lab
+  #       repository: zubyranks/gha-backend
+  #       client-payload: '{"git-tag": "${{ inputs.version }}"}'
    

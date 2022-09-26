@@ -1,4 +1,4 @@
-name: Build and Push Golang Image to AWS ECR.
+name: Build and Push Dagster Image to AWS ECR Using OIDC.
 on:
   workflow_dispatch:
     inputs:

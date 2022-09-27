@@ -70,7 +70,7 @@ jobs:
         build-args: ${{ env.build_args }}
         pull: true
         push: true
-        tags: ${{ secrets.ACCOUNT_NUMBER }}.dkr.ecr.${{ aws-region }}.amazonaws.com/${{ ecr_repository }}:workflow_lab_repo_${{ env.VERSION }}
+        tags: ${{ secrets.ACCOUNT_NUMBER }}.dkr.ecr.${{ env.aws-region }}.amazonaws.com/${{ env.ecr_repository }}:workflow_lab_repo_${{ env.VERSION }}
         # labels: ${{ steps.docker-meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache

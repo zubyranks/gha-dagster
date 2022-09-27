@@ -73,9 +73,12 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: static-site
-        # path: /home/runner/work/gha-dagster/gha-dagster
-        path: $GITHUB_WORKSPACE
-  
+        path: /home/runner/work/gha-dagster/gha-dagster
+
+    - name: Difference 
+      run: |
+        echo ${{ github.workspace }}
+        echo $GITHUB_WORKSPACE
 
   publish:
     runs-on: ubuntu-latest

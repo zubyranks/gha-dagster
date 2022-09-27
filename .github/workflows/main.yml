@@ -70,12 +70,12 @@ jobs:
         build-args: ${{ env.build_args }}
         pull: true
         push: true
-        tags: workflow_lab_repo_${{ env.VERSION }}
+        tags: 931366402038.dkr.ecr.us-east-1.amazonaws.com/gha-getupside:workflow_lab_repo_${{ env.VERSION }}
         # labels: ${{ steps.docker-meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
-        secrets: |
-          GIT_AUTH_TOKEN=${{ secrets.WORKFLOW_PUSH_IMAGE }}
+        # secrets: |
+        #   GIT_AUTH_TOKEN=${{ secrets.WORKFLOW_PUSH_IMAGE }}
 
     # - name: Build, Tag, and Push the Image to Amazon ECR
     #   uses: whoan/docker-build-with-cache-action@fix-yaml-parsing

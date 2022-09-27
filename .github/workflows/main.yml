@@ -74,6 +74,8 @@ jobs:
         # labels: ${{ steps.docker-meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
+        secrets: |
+          GIT_AUTH_TOKEN=${{ secrets.WORKFLOW_ACCESS }}
 
     # - name: Build, Tag, and Push the Image to Amazon ECR
     #   uses: whoan/docker-build-with-cache-action@fix-yaml-parsing

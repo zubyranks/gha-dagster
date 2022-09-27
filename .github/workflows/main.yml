@@ -68,7 +68,7 @@ jobs:
         context: .
         file: ./wf_lab.Dockerfile
         build-args: ${{ env.build_args }}
-        push: true
+        push: false
         tags: workflow_lab_repo_${{ env.VERSION }}
         # labels: ${{ steps.docker-meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache

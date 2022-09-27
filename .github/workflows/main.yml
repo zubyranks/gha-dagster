@@ -14,7 +14,6 @@ jobs:
       aws-region: us-east-1
       ecr_repository: gha-getupside
       VERSION: 1.1.20
-      context: "."
       build_args: ""
     permissions:
       id-token: write   # This is required for requesting the JWT
@@ -66,7 +65,7 @@ jobs:
       id: build-push
       uses: docker/build-push-action@v3
       with:
-        context: ${{ env.context }}
+        context: .
         file: ./wf_lab.Dockerfile
         build-args: ${{ env.build_args }}
         push: true

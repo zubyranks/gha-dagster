@@ -70,7 +70,7 @@ jobs:
         build-args: ${{ env.build_args }}
         pull: true
         push: true
-        tags: 931366402038.dkr.ecr.us-east-1.amazonaws.com/gha-getupside:workflow_lab_repo_${{ env.VERSION }}
+        tags: ${{ secrets.ACCOUNT_NUMBER }}.dkr.ecr.${{ aws-region }}.amazonaws.com/${{ ecr_repository }}:workflow_lab_repo_${{ env.VERSION }}
         # labels: ${{ steps.docker-meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache

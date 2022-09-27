@@ -28,7 +28,7 @@ jobs:
         id: increment-git-tag
         run: |
           chmod 700 build/git_update.sh
-          ./build/git_update.sh -v major
+          ./build/git_update.sh -v patch
         shell: bash        
 
       - name: Packaging Artifact
@@ -41,7 +41,7 @@ jobs:
         with:
           tag: "${{ steps.increment-git-tag.outputs.git-tag }}"
           publish: false
-          prerelease: true
+          prerelease: false
           config-name: release.yml
         env:
           GITHUB_TOKEN: ${{ secrets.WORKFLOW_ACCESS }}

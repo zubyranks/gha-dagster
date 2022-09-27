@@ -13,6 +13,9 @@ jobs:
     env:
       aws-region: us-east-1
       ecr_repository: gha-getupside
+      VERSION: 1.1.20
+      context: "."
+      build_args: ""
     permissions:
       id-token: write   # This is required for requesting the JWT
       contents: read    # This is required for actions/checkout
@@ -47,6 +50,30 @@ jobs:
         path: /tmp/.buildx-cache
         key: buildx-${{ github.sha }}
         restore-keys: buildx-
+  
+    - name: Determine tags
+      id: docker-meta
+      uses: docker/metadata-action@v3
+      with:
+        images: ${{ steps.login-ecr.outputs.registry }}/${{ env.ecr_repository }}
+        # tags: |
+        #   type=sha,event=branch
+        #   type=semver,pattern={{raw}}
+        # flavor: |
+        #   latest=false
+
+    - name: Build and push
+      id: build-push
+      uses: docker/build-push-action@v3
+      with:
+        context: ${{ env.context }}
+        file: $GITHUB_WORKSPACE/wf_lab.Dockerfile
+        build-args: ${{ env.build_args }}
+        push: true
+        tags: workflow_lab_repo_${{ env.VERSION }}
+        # labels: ${{ steps.docker-meta.outputs.labels }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache
 
     # - name: Build, Tag, and Push the Image to Amazon ECR
     #   uses: whoan/docker-build-with-cache-action@fix-yaml-parsing

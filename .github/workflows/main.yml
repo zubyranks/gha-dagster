@@ -73,7 +73,8 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: static-site
-        path: /home/runner/work/gha-dagster/gha-dagster
+        # path: /home/runner/work/gha-dagster/gha-dagster
+        path: ${{ github.workspace }}
 
     - name: Difference 
       run: |

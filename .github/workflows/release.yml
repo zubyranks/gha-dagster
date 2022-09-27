@@ -28,7 +28,7 @@ jobs:
         id: increment-git-tag
         run: |
           chmod 700 build/git_update.sh
-          ./build/git_update.sh -v minor
+          ./build/git_update.sh -v major
         shell: bash        
 
       - name: Packaging Artifact

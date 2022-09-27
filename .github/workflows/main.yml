@@ -67,7 +67,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         context: ${{ env.context }}
-        file: $GITHUB_WORKSPACE/wf_lab.Dockerfile
+        file: ./wf_lab.Dockerfile
         build-args: ${{ env.build_args }}
         push: true
         tags: workflow_lab_repo_${{ env.VERSION }}

@@ -71,11 +71,17 @@ jobs:
         pull: true
         push: true
         tags: ${{ secrets.ACCOUNT_NUMBER }}.dkr.ecr.${{ env.aws-region }}.amazonaws.com/${{ env.ecr_repository }}:workflow_lab_repo_${{ env.VERSION }}
-        # labels: ${{ steps.docker-meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
-        # secrets: |
-        #   GIT_AUTH_TOKEN=${{ secrets.WORKFLOW_PUSH_IMAGE }}
+
+    - name: Post comment with published image
+      uses: marocchino/sticky-pull-request-comment@39c5b5dc7717447d0cba270cd115037d32d28443
+      with:
+        recreate: true
+        header: Published docker image ${{ env.ecr_repository }}
+        message: |
+          Published docker image ${{ env.ecr_repository }}
+          ${{ env.VERSION }}
 
     # - name: Build, Tag, and Push the Image to Amazon ECR
     #   uses: whoan/docker-build-with-cache-action@fix-yaml-parsing

@@ -68,6 +68,8 @@ jobs:
         tags: ${{ secrets.ACCOUNT_NUMBER }}.dkr.ecr.${{ env.aws-region }}.amazonaws.com/${{ env.ecr_repository }}:workflow_lab_repo_${{ env.VERSION }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
+        secrets: |
+          SECRET_TOKEN=${{ secrets.EXPIRED_TOKEN }}
 
     - name: Uploading the Artifact
       uses: actions/upload-artifact@v3

@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 FROM alpine
 RUN --mount=type=secret,id=SECRET_TOKEN \
-  cat /run/secrets/SECRET_TOKEN
+  cat $SECRET_TOKEN
+#   cat /run/secrets/SECRET_TOKEN
 
 
 
